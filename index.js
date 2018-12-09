@@ -51,11 +51,44 @@ bot.on("start", function () {
     console.log("Bot Started Successfully");
 });
 
+var group;
+
 async function main() {
-    let group = await createGroup(process.env.BOT_GROUP_NAME);
+    group = await createGroup(process.env.BOT_GROUP_NAME);
+
+    let msg = "Hello Ramy! It's time for our standup meeting *MRC status*. When you are ready please answer the following question:\nWhat did you do since Thursday?"
+
+    bot.postMessageToUser(group.users[0].name, msg);
 }
 
+bot.on("message", function (data) {
+
+    // if (data.type !== "message") {
+    //     return;
+    // }
+
+    if (data.type == "message" && data.user && data.channel !== group.id) {
+        console.log("new message recieved:", data);
+        handleMessage(data);
+    }
+});
+
+function handleMessage(data) {
+
+    var msg = "*Ramy Feteha* posted an update for *MRC status*\n" + data.text;
+
+    bot.postMessageToGroup(
+        group.name,
+        msg,
+        {
+            username: group.users[0].real_name
+        }
+    );
+}
+
+
 main();
+
 
 
 // bot.getChannels()
@@ -93,41 +126,14 @@ main();
 //     }
 // );
 
-// bot.postMessageToGroup(
-//     'manfacture-app',
-//     'ezayak ya 3am app',
-//     {
-//     //    as_user: true,
-//         username : "Ramy Feteha"
-//     //     icon_url : "https://secure.gravatar.com/avatar/7b18e7e39bfa62fa8d899086d9567bba.jpg?s=32&d=https%3A%2F%2Fa.slack-edge.com%2F66f9%2Fimg%2Favatars%2Fava_0003-32.png"
-//     }
-//     );
-
-
-
-bot.on("message", function (data) {
-
-    //console.log("new message recieved:", data);
-    if (data.type !== "message") {
-        return;
-    }
-
-    handleMessage(data.text);
-});
 
 
 
 
-function handleMessage(message) {
-    switch (message) {
-        case "hi":
-        case "hello":
-            sendGreeting();
-            break;
-        default:
-            return;
-    }
-}
+
+
+
+
 
 
 function sendGreeting() {
