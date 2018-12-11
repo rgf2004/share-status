@@ -26,6 +26,8 @@ class SlackGroup {
     }
 
     startGettingStatus() {
+        
+        this.cleanMembersFromBots();
 
         this.members.forEach(member => {
             member.step();
@@ -38,11 +40,9 @@ class SlackGroup {
         member.step(msg);
     }
 
-    //TODO need to remove the bot uses from members
     cleanMembersFromBots() {
-        this.members.forEach(member => {
-            
-        });
+        let filteredMemebers = this.members.filter(member => member.is_bot != true);
+        this.members = filteredMemebers;
     }
 }
 
