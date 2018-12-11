@@ -35,10 +35,11 @@ StateMachine.factory(SlackUser,
         ],
         methods: {
             onQ1Sent: function () {
+
                 let msg =
-                    `Hello *${this.real_name}*! It's time for our standup meeting *MRC status*. When you are ready please answer the following question:
-What did you do since yesterday?
-                `;
+`Hello *${this.real_name}*! It's time for our standup meeting *MRC status*. When you are ready please answer the following question:
+What did you do since yesterday?`
+;
                 this.bot.postMessageToUser(this.name, msg);
             },
             onQ2Sent: function (lifecycle, answer) {
@@ -84,6 +85,10 @@ ${this.messages.q4}
                         username: this.real_name
                     }
                 );
+
+                let finalMessage = `Thank you! Have fun :the_horns:`
+
+                this.bot.postMessageToUser(this.name, finalMessage);  
                 
             },
             onReset: function () { console.log(`${this.name} has entered ${this.state} state`) }
