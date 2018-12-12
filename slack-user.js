@@ -20,6 +20,13 @@ class SlackUser {
             });
     }
 
+
+    sendRemainder() {
+        let msg =
+        `:bell: Hello *${this.real_name}* :wave: remember to let the team know what you are up to.`;
+        this.bot.postMessageToUser(this.name, msg);
+    }
+
 }
 
 StateMachine.factory(SlackUser,

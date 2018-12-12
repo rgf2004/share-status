@@ -2,6 +2,7 @@
 require('dotenv').config();
 
 var SlackBot = require("slackbots");
+var schedule = require('node-schedule');
 
 var SlackGroup = require("./slack-group");
 
@@ -24,87 +25,55 @@ async function main() {
         name: process.env.BOT_GROUP_NAME
     });
 
-    // wait till getting users data, need to find a better solution
+    //wait till getting users data, need to find a better solution
     setTimeout(() => {
-        group.startGettingStatus();    
+        group.cleanMembersFromBots();  
     }, 2000);
     
+    let sendGreetingTime        = '45 12 * * *';
+    let sendFirstRemainderTime  = '50 12 * * *';
+    let sendSecondRemainderTime = '55 12 * * *';
+    let publishNotSentUserTime  = '00 13 * * *';
+    let sendThirdRemainderTime  = '05 13 * * *';
+    let resetUserTime           = '10 13 * * *';
+
+
+    var sendRequestForStatus = schedule.scheduleJob(sendGreetingTime, function(){
+        group.startGettingStatus();
+    });
+  
+    var sendRemaindersToNotCompletedUSers = schedule.scheduleJob(sendFirstRemainderTime, function(){
+        group.sendRemindersToNotCompletedUsers();
+    });
+
+    var sendSecondRemaindersToNotCompletedUSers = schedule.scheduleJob(sendSecondRemainderTime, function(){
+        group.sendRemindersToNotCompletedUsers();
+    });
+
+    var publishCurrentUsersStatus = schedule.scheduleJob(publishNotSentUserTime, function(){
+        group.publishCurrentUsersStatus(false);
+    });
+
+    var sendThirdRemaindersToNotCompletedUSers = schedule.scheduleJob(sendThirdRemainderTime, function(){
+        group.sendRemindersToNotCompletedUsers();
+    });
+
+    var resetUsersStates = schedule.scheduleJob(resetUserTime, function(){
+        group.publishCurrentUsersStatus(true);
+    });
 }
 
 bot.on("message", function (data) {
 
-    // if (data.type !== "message") {
-    //     return;
-    // }
-
-    if (data.type == "message" && data.user && data.channel !== group.id) {
+    if (data.type === "message" && data.user && data.channel !== group.id) {
         group.handleIncommingMessage(data);
+    }
+
+    if (data.type === "member_joined_channel" && data.channel === group.id) {
+        group.addUser(data);
     }
 });
 
 
 main();
 
-
-
-// bot.getChannels()
-//     .then(
-//         res => {
-//             console.log("channels:")
-//             var channels = res.channels;
-//             channels.forEach(element => {
-//                 console.log(element.id,"-->",element.name);
-//             });
-//         }
-//     );
-
-
-// bot.getUsers()
-// .then(
-//     res => {
-//         console.log("members:")
-//         var members = res.members;
-//         members.forEach(element => {
-//             console.log(element.id,"-->",element.name);
-//         });
-//     }
-// );
-
-// bot.getGroups()
-// .then(
-//     res => {
-//         console.log("groups:")
-//         var groups = res.groups;
-//         groups.forEach(element => {
-//             //console.log(element.id,"-->",element.name);
-//             console.log(element);
-//         });
-//     }
-// );
-
-
-
-
-
-
-
-
-
-
-
-function sendGreeting() {
-    var greeting = getGreeting();
-    bot.postMessageToChannel(channel, greeting);
-}
-
-
-function getGreeting() {
-    var greetings = [
-        "hello!",
-        "hi there!",
-        "cheerio!",
-        "how do you do!",
-        "¡hola!"
-    ];
-    return greetings[Math.floor(Math.random() * greetings.length)];
-}
