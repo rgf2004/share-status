@@ -1,0 +1,13 @@
+{
+    "bot_name" : "Slacky",
+    "channel_name" : "status",
+    "meeting_name" : "Team-Standup",
+    "notification" : {
+        "start_getting_status_time" : "30 10 * * 0-4",
+        "first_notification_time" : "30 11 * * 0-4",
+        "second_notification_time" : "30 12 * * 0-4",
+        "publish_missing_people_notification_time" : "00 14 * * 0-4",
+        "third_notification_time" : "00 15 * * 0-4",
+        "publish_missing_people_notification_reset_time" : "00 00 * * 0-4"
+    }
+}
