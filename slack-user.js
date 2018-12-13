@@ -3,6 +3,7 @@ var StateMachine = require('javascript-state-machine');
 class SlackUser {
 
     constructor(params) {
+        this.config = params.config;
         this.bot = params.bot;
         this.group_name = params.group_name;
         this.id = params.id;
@@ -44,7 +45,7 @@ StateMachine.factory(SlackUser,
             onQ1Sent: function () {
 
                 let msg =
-`Hello *${this.real_name}*! It's time for our standup meeting *MRC status*. When you are ready please answer the following question:
+`Hello *${this.real_name}*! It's time for our standup meeting *${this.config.meeting_name}*. When you are ready please answer the following question:
 What did you do since yesterday?`
 ;
                 this.bot.postMessageToUser(this.name, msg);

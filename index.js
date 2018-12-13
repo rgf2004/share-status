@@ -6,13 +6,14 @@ var schedule = require('node-schedule');
 
 var SlackGroup = require("./slack-group");
 
+const config = require ("./config");
+
 var bot = new SlackBot({
     token: process.env.BOT_TOKEN,
-    name: process.env.BOT_NAME
+    name: config.bot_name
 });
 
 bot.on("start", function () {
-    //bot.postMessageToChannel(groupName, "Share-Status is online!");
     console.log("Bot Started Successfully");
 });
 
@@ -21,44 +22,32 @@ var group;
 async function main() {
 
     group = new SlackGroup({
+        config : config,
         bot: bot,
-        name: process.env.BOT_GROUP_NAME
+        name: config.channel_name
     });
 
-    //wait till getting users data, need to find a better solution
-    setTimeout(() => {
-        group.cleanMembersFromBots();  
-    }, 2000);
-    
-    let sendGreetingTime        = '45 12 * * *';
-    let sendFirstRemainderTime  = '50 12 * * *';
-    let sendSecondRemainderTime = '55 12 * * *';
-    let publishNotSentUserTime  = '00 13 * * *';
-    let sendThirdRemainderTime  = '05 13 * * *';
-    let resetUserTime           = '10 13 * * *';
-
-
-    var sendRequestForStatus = schedule.scheduleJob(sendGreetingTime, function(){
+    schedule.scheduleJob(config.notification.start_getting_status_time, function(){
         group.startGettingStatus();
     });
-  
-    var sendRemaindersToNotCompletedUSers = schedule.scheduleJob(sendFirstRemainderTime, function(){
+
+    schedule.scheduleJob(config.notification.first_notification_time, function(){
         group.sendRemindersToNotCompletedUsers();
     });
 
-    var sendSecondRemaindersToNotCompletedUSers = schedule.scheduleJob(sendSecondRemainderTime, function(){
+    schedule.scheduleJob(config.notification.second_notification_time, function(){
         group.sendRemindersToNotCompletedUsers();
     });
 
-    var publishCurrentUsersStatus = schedule.scheduleJob(publishNotSentUserTime, function(){
+    schedule.scheduleJob(config.notification.publish_missing_people_notification_time, function(){
         group.publishCurrentUsersStatus(false);
     });
 
-    var sendThirdRemaindersToNotCompletedUSers = schedule.scheduleJob(sendThirdRemainderTime, function(){
+    schedule.scheduleJob(config.notification.third_notification_time, function(){
         group.sendRemindersToNotCompletedUsers();
     });
 
-    var resetUsersStates = schedule.scheduleJob(resetUserTime, function(){
+    schedule.scheduleJob(config.notification.publish_missing_people_notification_reset_time, function(){
         group.publishCurrentUsersStatus(true);
     });
 }
@@ -73,7 +62,6 @@ bot.on("message", function (data) {
         group.addUser(data);
     }
 });
-
 
 main();
 

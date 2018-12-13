@@ -3,6 +3,7 @@ var SlackUser = require("./slack-user");
 class SlackGroup {
 
     constructor(params) {
+        this.config = params.config;
         this.bot = params.bot;
         this.name = params.name;
         this.members = [];
@@ -16,13 +17,24 @@ class SlackGroup {
 
                     groupData.members.forEach(member => {
                         this.members.push(new SlackUser({
+                            config : this.config,
                             bot: this.bot,
                             group_name : this.name,
                             id: member
                         }));
                     });                    
+                },
+                error => {
+                    console.log(error);
+                    console.log(`Error: Publish channel [${this.name}] doesn't exist or the bot is not a member`);
+                    process.exit(1);
                 }
             );
+
+        
+        setTimeout(() => {
+            this.cleanMembersFromBots();  
+        }, 5000);
     }
 
     addUser(data) {
@@ -35,7 +47,7 @@ class SlackGroup {
     
     }
 
-    startGettingStatus() {        
+    startGettingStatus() {      
         this.members.forEach(member => {
             member.step();
         });
