@@ -2,7 +2,7 @@
 
 This is a proof of concept for making a bot helping in collecting team memebers' status, something simliar to **geekbot** https://geekbot.com/
 
-Its main functionality is making asynchronous standup meetings in Slack by asking the team's members about their status and publish it on a channel so all members knows others' status
+Its main functionality is making asynchronous standup meetings in Slack by asking the team's members about their status and publish it on a channel so all members know others' status
 
 #### The Current implmented Questions:
 *  What did you do since yesterday?
@@ -20,6 +20,7 @@ Its main functionality is making asynchronous standup meetings in Slack by askin
 *  create a private channel in your slack workspace 
 *  update the **config.json** file, `channel_name` attribute by the name of this private channel.
 *  customize the bot as you need for example bot name, time for notifications, ...etc
+*  run the app using command `node ./index.js `
 
 ### This is just an initial boot and it still needs a lot of features, for example:
 *  Build a front end user friendly control panel
